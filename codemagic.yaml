@@ -1,1 +1,37 @@
+workflows:
+  android-preview:
+    name: Expo Android Preview (APK)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      vars:
+        EAS_PROFILE: "preview"
+        # EXPO_TOKEN को Codemagic UI के Environment variables में जोड़ें (secure)
+    scripts:
+      - name: Install deps
+        script: npm ci
+      - name: Verify Expo auth
+        script: npx eas-cli whoami
+      - name: Build APK
+        script: npx eas-cli build -p android --profile "$EAS_PROFILE" --non-interactive
+    artifacts:
+      - dist/**/*.apk
+      - build/**/outputs/**/*.apk
 
+  android-production:
+    name: Expo Android Production (AAB)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      vars:
+        EAS_PROFILE: "production"
+    scripts:
+      - name: Install deps
+        script: npm ci
+      - name: Verify Expo auth
+        script: npx eas-cli whoami
+      - name: Build AAB
+        script: npx eas-cli build -p android --profile "$EAS_PROFILE" --non-interactive
+    artifacts:
+      - dist/**/*.aab
+      - build/**/outputs/**/*.aab
